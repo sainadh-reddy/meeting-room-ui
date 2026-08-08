@@ -12,6 +12,7 @@ import {
   Chip,
   TextField,
   InputAdornment,
+  TableContainer,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -83,79 +84,81 @@ const AdminBookings = () => {
           />
         </Box>
 
-        <Table>
-          <TableHead>
-            <TableRow sx={{ bgcolor: '#F8FAFC' }}>
-              <TableCell sx={{ fontWeight: 600 }}>ID</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Meeting Title</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Room</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>User / Organizer</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Time</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Recurrence</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
-              <TableCell sx={{ fontWeight: 600 }} align="center">
-                Action
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredBookings.map((b) => (
-              <TableRow key={b.id} hover>
-                <TableCell>#{b.id}</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>{b.title}</TableCell>
-                <TableCell>{b.roomName}</TableCell>
-                <TableCell>
-                  <Typography variant="body2" fontWeight={600}>
-                    {b.userName || 'N/A'}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {b.userEmail}
-                  </Typography>
+        <TableContainer sx={{ overflowX: 'auto', boxShadow: 'none' }}>
+          <Table sx={{ minWidth: 700 }}>
+            <TableHead>
+              <TableRow sx={{ bgcolor: '#F8FAFC' }}>
+                <TableCell sx={{ fontWeight: 600 }}>ID</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Meeting Title</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Room</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>User / Organizer</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Time</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Recurrence</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+                <TableCell sx={{ fontWeight: 600 }} align="center">
+                  Action
                 </TableCell>
-                <TableCell>{b.bookingDate}</TableCell>
-                <TableCell>{`${b.startTime} - ${b.endTime}`}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={b.recurrenceType || 'NONE'}
-                    size="small"
-                    variant="outlined"
-                    sx={{ fontSize: '0.75rem' }}
-                  />
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    label={b.status}
-                    size="small"
-                    color={
-                      b.status === 'Cancelled' ? 'error' : b.status === 'Completed' ? 'success' : 'primary'
-                    }
-                  />
-                </TableCell>
-                <TableCell align="center">
-                  {b.status !== 'Cancelled' && (
-                    <Button
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredBookings.map((b) => (
+                <TableRow key={b.id} hover>
+                  <TableCell>#{b.id}</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>{b.title}</TableCell>
+                  <TableCell>{b.roomName}</TableCell>
+                  <TableCell>
+                    <Typography variant="body2" fontWeight={600}>
+                      {b.userName || 'N/A'}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {b.userEmail}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>{b.bookingDate}</TableCell>
+                  <TableCell>{`${b.startTime} - ${b.endTime}`}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={b.recurrenceType || 'NONE'}
                       size="small"
-                      color="error"
                       variant="outlined"
-                      startIcon={<CancelIcon />}
-                      onClick={() => handleCancel(b.id)}
-                    >
-                      Cancel
-                    </Button>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-            {filteredBookings.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={9} align="center" sx={{ py: 3 }}>
-                  No bookings found matching search query.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+                      sx={{ fontSize: '0.75rem' }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={b.status}
+                      size="small"
+                      color={
+                        b.status === 'Cancelled' ? 'error' : b.status === 'Completed' ? 'success' : 'primary'
+                      }
+                    />
+                  </TableCell>
+                  <TableCell align="center">
+                    {b.status !== 'Cancelled' && (
+                      <Button
+                        size="small"
+                        color="error"
+                        variant="outlined"
+                        startIcon={<CancelIcon />}
+                        onClick={() => handleCancel(b.id)}
+                      >
+                        Cancel
+                      </Button>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+              {filteredBookings.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={9} align="center" sx={{ py: 3 }}>
+                    No bookings found matching search query.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Paper>
     </Box>
   );

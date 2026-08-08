@@ -34,23 +34,23 @@ const RoomCard = ({ room, onBook, onToggleStatus, onEdit, isAdmin, isAvailable: 
     >
       <CardContent
         sx={{
-          p: 3,
+          p: { xs: 2.5, sm: 3 },
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
           height: '100%',
           flexGrow: 1,
-          '&:last-child': { pb: 3 },
+          '&:last-child': { pb: { xs: 2.5, sm: 3 } },
         }}
       >
         <Box>
-          {/* Header Row: Room Icon, Name & Green/Red Dot Availability Badge */}
+          {/* Header Row: Room Icon, Name & Status Dot */}
           <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
             <Box display="flex" alignItems="center" gap={1.5}>
               <Box
                 sx={{
-                  width: 42,
-                  height: 42,
+                  width: 40,
+                  height: 40,
                   borderRadius: 2,
                   backgroundColor: isInactive ? '#F1F5F9' : '#00285515',
                   color: isInactive ? '#64748B' : '#002855',
@@ -60,10 +60,10 @@ const RoomCard = ({ room, onBook, onToggleStatus, onEdit, isAdmin, isAvailable: 
                   flexShrink: 0,
                 }}
               >
-                <MeetingRoomIcon />
+                <MeetingRoomIcon fontSize="small" />
               </Box>
               <Box>
-                <Typography variant="h6" fontWeight={700} sx={{ lineHeight: 1.2 }}>
+                <Typography variant="h6" fontWeight={700} sx={{ lineHeight: 1.2, fontSize: { xs: '1rem', sm: '1.1rem' } }}>
                   {room.name}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
@@ -72,15 +72,15 @@ const RoomCard = ({ room, onBook, onToggleStatus, onEdit, isAdmin, isAvailable: 
               </Box>
             </Box>
 
-            {/* Green Dot (Available) / Red Dot (Not Available) Only */}
+            {/* Status Dot */}
             <Box
               title={isAvailable ? 'Available' : isFullyBooked ? 'Fully Booked' : 'Not Available'}
               sx={{
-                width: 12,
-                height: 12,
+                width: 10,
+                height: 10,
                 borderRadius: '50%',
                 backgroundColor: isAvailable ? '#10B981' : '#EF4444',
-                boxShadow: isAvailable ? '0 0 8px rgba(16, 185, 129, 0.6)' : '0 0 8px rgba(239, 68, 68, 0.6)',
+                boxShadow: isAvailable ? '0 0 6px rgba(16, 185, 129, 0.6)' : '0 0 6px rgba(239, 68, 68, 0.6)',
                 flexShrink: 0,
                 mt: 0.5,
               }}
@@ -91,44 +91,51 @@ const RoomCard = ({ room, onBook, onToggleStatus, onEdit, isAdmin, isAvailable: 
           <Box display="flex" gap={2} my={2} flexWrap="wrap">
             <Box display="flex" alignItems="center" gap={0.5}>
               <LayersIcon fontSize="small" color="action" />
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
                 Floor {room.floor}
               </Typography>
             </Box>
             <Box display="flex" alignItems="center" gap={0.5}>
               <PeopleIcon fontSize="small" color="action" />
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.85rem' }}>
                 {room.capacity} seats
               </Typography>
             </Box>
           </Box>
 
-          {/* Facilities Row with fixed minHeight for alignment */}
-          <Box display="flex" alignItems="center" gap={0.8} mb={2} sx={{ minHeight: 32 }}>
+          {/* Facilities Row */}
+          <Box display="flex" alignItems="center" gap={0.8} mb={2} sx={{ minHeight: 28 }}>
             {room.facilities ? (
               <>
                 <BuildIcon fontSize="small" color="action" />
-                <Typography variant="caption" color="text.secondary" noWrap>
+                <Typography variant="caption" color="text.secondary" noWrap sx={{ fontSize: '0.78rem' }}>
                   {room.facilities}
                 </Typography>
               </>
             ) : (
-              <Typography variant="caption" color="text.secondary" sx={{ opacity: 0.6, fontStyle: 'italic' }}>
+              <Typography variant="caption" color="text.secondary" sx={{ opacity: 0.6, fontStyle: 'italic', fontSize: '0.78rem' }}>
                 Standard setup
               </Typography>
             )}
           </Box>
         </Box>
 
-        {/* Action Buttons Footer */}
-        <Box display="flex" gap={1} mt="auto">
+        {/* Action Buttons Footer - Sleek & Proportional */}
+        <Box display="flex" gap={1} mt="auto" justifyContent="flex-end">
           {!isAdmin && onBook && (
             <Button
               variant="contained"
-              fullWidth
               disabled={!isAvailable}
               onClick={() => onBook(room)}
-              sx={{ bgcolor: '#002855', '&:hover': { bgcolor: '#001835' }, py: 1 }}
+              sx={{
+                bgcolor: '#002855',
+                '&:hover': { bgcolor: '#001835' },
+                py: 0.8,
+                px: 2.5,
+                fontSize: '0.85rem',
+                borderRadius: 2,
+                width: '100%',
+              }}
             >
               Book Room
             </Button>
@@ -137,7 +144,11 @@ const RoomCard = ({ room, onBook, onToggleStatus, onEdit, isAdmin, isAvailable: 
           {isAdmin && (
             <>
               {onEdit && (
-                <Button variant="outlined" fullWidth onClick={() => onEdit(room)} sx={{ py: 1 }}>
+                <Button
+                  variant="outlined"
+                  onClick={() => onEdit(room)}
+                  sx={{ py: 0.8, px: 2, fontSize: '0.85rem', borderRadius: 2, flexGrow: 1 }}
+                >
                   Edit
                 </Button>
               )}
@@ -145,9 +156,8 @@ const RoomCard = ({ room, onBook, onToggleStatus, onEdit, isAdmin, isAvailable: 
                 <Button
                   variant="contained"
                   color={isInactive ? 'success' : 'error'}
-                  fullWidth
                   onClick={() => onToggleStatus(room)}
-                  sx={{ py: 1 }}
+                  sx={{ py: 0.8, px: 2, fontSize: '0.85rem', borderRadius: 2, flexGrow: 1 }}
                 >
                   {isInactive ? 'Activate' : 'Disable'}
                 </Button>

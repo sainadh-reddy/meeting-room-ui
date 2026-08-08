@@ -90,12 +90,19 @@ const AdminRooms = () => {
 
   return (
     <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+      <Box
+        display="flex"
+        flexDirection={{ xs: 'column', sm: 'row' }}
+        justifyContent="space-between"
+        alignItems={{ xs: 'flex-start', sm: 'center' }}
+        gap={2}
+        mb={4}
+      >
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.1rem' } }}>
             Meeting Rooms Inventory
           </Typography>
-          <Typography variant="body1" color="text.secondary">
+          <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.85rem', sm: '1rem' } }}>
             Manage corporate rooms, capacity limits, and equipment availability
           </Typography>
         </Box>
@@ -103,7 +110,15 @@ const AdminRooms = () => {
           variant="contained"
           startIcon={<AddIcon />}
           onClick={handleOpenAdd}
-          sx={{ bgcolor: '#002855', '&:hover': { bgcolor: '#001835' }, px: 3, py: 1.2 }}
+          sx={{
+            bgcolor: '#002855',
+            '&:hover': { bgcolor: '#001835' },
+            px: 2.5,
+            py: 0.9,
+            fontSize: '0.875rem',
+            alignSelf: { xs: 'flex-start', sm: 'auto' },
+            whiteSpace: 'nowrap',
+          }}
         >
           Add New Room
         </Button>

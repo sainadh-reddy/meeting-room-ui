@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, List, ListItemButton, ListItemIcon, ListItemText, Typography, Divider } from '@mui/material';
+import { Box, List, ListItemButton, ListItemIcon, ListItemText, Typography, Divider, Drawer } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
@@ -11,7 +11,7 @@ import BookmarkAddedIcon from '@mui/icons-material/BookmarkAdded';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useAuth } from '../context/AuthContext';
 
-const Sidebar = () => {
+const Sidebar = ({ mobileOpen, onClose }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout, isAdmin } = useAuth();
@@ -33,7 +33,12 @@ const Sidebar = () => {
 
   const navItems = isAdmin ? adminNav : employeeNav;
 
-  return (
+  const handleItemClick = (path) => {
+    navigate(path);
+    if (onClose) onClose();
+  };
+
+  const drawerContent = (
     <Box
       sx={{
         width: 260,
@@ -41,12 +46,7 @@ const Sidebar = () => {
         color: '#ffffff',
         display: 'flex',
         flexDirection: 'column',
-        height: '100vh',
-        position: 'fixed',
-        left: 0,
-        top: 0,
-        boxShadow: '4px 0 20px rgba(0,0,0,0.15)',
-        zIndex: 1200,
+        height: '100%',
       }}
     >
       {/* Brand Logo Header */}
@@ -101,7 +101,7 @@ const Sidebar = () => {
           return (
             <ListItemButton
               key={item.text}
-              onClick={() => navigate(item.path)}
+              onClick={() => handleItemClick(item.path)}
               sx={{
                 borderRadius: 2,
                 mb: 0.8,
@@ -132,6 +132,7 @@ const Sidebar = () => {
       <Box p={2}>
         <ListItemButton
           onClick={() => {
+            if (onClose) onClose();
             logout();
             navigate('/login');
           }}
@@ -148,6 +149,42 @@ const Sidebar = () => {
         </ListItemButton>
       </Box>
     </Box>
+  );
+
+  return (
+    <>
+      {/* Mobile Drawer (xs & sm screens) */}
+      <Drawer
+        variant="temporary"
+        open={mobileOpen}
+        onClose={onClose}
+        ModalProps={{ keepMounted: true }}
+        sx={{
+          display: { xs: 'block', md: 'none' },
+          '& .MuiDrawer-paper': { width: 260, bgcolor: '#001835', borderRight: 'none' },
+        }}
+      >
+        {drawerContent}
+      </Drawer>
+
+      {/* Desktop Fixed Sidebar (md & up) */}
+      <Box
+        sx={{
+          width: 260,
+          bgcolor: '#001835',
+          display: { xs: 'none', md: 'flex' },
+          flexDirection: 'column',
+          height: '100vh',
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          boxShadow: '4px 0 20px rgba(0,0,0,0.15)',
+          zIndex: 1200,
+        }}
+      >
+        {drawerContent}
+      </Box>
+    </>
   );
 };
 

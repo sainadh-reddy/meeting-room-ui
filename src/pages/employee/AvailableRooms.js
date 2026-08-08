@@ -139,8 +139,19 @@ const AvailableRooms = () => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} sm={2}>
-              <Button type="submit" variant="contained" fullWidth sx={{ bgcolor: '#002855', '&:hover': { bgcolor: '#001835' }, py: 1 }}>
+            <Grid item xs={12} sm={2} display="flex" justifyContent={{ xs: 'flex-start', sm: 'flex-end' }}>
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{
+                  bgcolor: '#002855',
+                  '&:hover': { bgcolor: '#001835' },
+                  py: 0.9,
+                  px: 3,
+                  fontSize: '0.875rem',
+                  width: { xs: '100%', sm: 'auto' },
+                }}
+              >
                 Filter
               </Button>
             </Grid>

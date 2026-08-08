@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Grid, Paper, Table, TableHead, TableRow, TableCell, TableBody, Chip, Button } from '@mui/material';
+import { Box, Typography, Grid, Paper, Table, TableHead, TableRow, TableCell, TableBody, Chip, Button, TableContainer } from '@mui/material';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -54,16 +54,16 @@ const AdminDashboard = () => {
   return (
     <Box>
       <Box mb={4}>
-        <Typography variant="h4" fontWeight={700}>
+        <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.1rem' } }}>
           Admin Control Dashboard
         </Typography>
-        <Typography variant="body1" color="text.secondary">
+        <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.85rem', sm: '1rem' } }}>
           Click any metric card below to filter organization bookings
         </Typography>
       </Box>
 
       {/* Stats Overview with Interactive Card Filtering */}
-      <Grid container spacing={3} mb={4}>
+      <Grid container spacing={2} mb={4}>
         <Grid item xs={12} sm={6} md={2.4} display="flex">
           <StatsCard
             title="Total Rooms"
@@ -116,10 +116,10 @@ const AdminDashboard = () => {
         </Grid>
       </Grid>
 
-      {/* Bookings Table without Filtered Tag */}
-      <Paper sx={{ p: 3, borderRadius: 3 }}>
+      {/* Bookings Table */}
+      <Paper sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-          <Typography variant="h6" fontWeight={700}>
+          <Typography variant="h6" fontWeight={700} sx={{ fontSize: { xs: '1rem', sm: '1.15rem' } }}>
             Organization Bookings {selectedFilter !== 'ALL' ? `(${selectedFilter})` : ''}
           </Typography>
           {selectedFilter !== 'ALL' && (
@@ -128,53 +128,56 @@ const AdminDashboard = () => {
               startIcon={<FilterAltOffIcon />}
               onClick={() => setSelectedFilter('ALL')}
               color="inherit"
+              sx={{ fontSize: '0.8rem' }}
             >
               Clear Filter
             </Button>
           )}
         </Box>
 
-        <Table>
-          <TableHead>
-            <TableRow sx={{ bgcolor: '#F8FAFC' }}>
-              <TableCell sx={{ fontWeight: 600 }}>ID</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Title</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Room</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>User</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Time</TableCell>
-              <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {displayedBookings.map((b) => (
-              <TableRow key={b.id} hover>
-                <TableCell>#{b.id}</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>{b.title}</TableCell>
-                <TableCell>{b.roomName}</TableCell>
-                <TableCell>{b.userName || b.userEmail}</TableCell>
-                <TableCell>{b.bookingDate}</TableCell>
-                <TableCell>{`${b.startTime} - ${b.endTime}`}</TableCell>
-                <TableCell>
-                  <Chip
-                    label={b.status}
-                    size="small"
-                    color={
-                      b.status === 'Cancelled' ? 'error' : b.status === 'Completed' ? 'success' : 'primary'
-                    }
-                  />
-                </TableCell>
+        <TableContainer sx={{ overflowX: 'auto', boxShadow: 'none' }}>
+          <Table sx={{ minWidth: 600 }}>
+            <TableHead>
+              <TableRow sx={{ bgcolor: '#F8FAFC' }}>
+                <TableCell sx={{ fontWeight: 600 }}>ID</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Title</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Room</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>User</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Time</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
               </TableRow>
-            ))}
-            {displayedBookings.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={7} align="center" sx={{ py: 3 }}>
-                  No bookings found for status "{selectedFilter}".
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+            </TableHead>
+            <TableBody>
+              {displayedBookings.map((b) => (
+                <TableRow key={b.id} hover>
+                  <TableCell>#{b.id}</TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>{b.title}</TableCell>
+                  <TableCell>{b.roomName}</TableCell>
+                  <TableCell>{b.userName || b.userEmail}</TableCell>
+                  <TableCell>{b.bookingDate}</TableCell>
+                  <TableCell>{`${b.startTime} - ${b.endTime}`}</TableCell>
+                  <TableCell>
+                    <Chip
+                      label={b.status}
+                      size="small"
+                      color={
+                        b.status === 'Cancelled' ? 'error' : b.status === 'Completed' ? 'success' : 'primary'
+                      }
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+              {displayedBookings.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={7} align="center" sx={{ py: 3 }}>
+                    No bookings found for status "{selectedFilter}".
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Paper>
     </Box>
   );
