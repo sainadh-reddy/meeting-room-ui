@@ -14,7 +14,6 @@ const EmployeeDashboard = () => {
   const navigate = useNavigate();
   const [myBookings, setMyBookings] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState('ALL'); // 'ALL', 'Upcoming', 'Completed'
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchMyBookings();
@@ -26,8 +25,6 @@ const EmployeeDashboard = () => {
       setMyBookings(res.data);
     } catch (err) {
       console.error('Failed to load user bookings:', err);
-    } finally {
-      setLoading(false);
     }
   };
 

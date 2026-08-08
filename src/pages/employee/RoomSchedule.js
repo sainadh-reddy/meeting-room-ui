@@ -34,6 +34,7 @@ const RoomSchedule = () => {
     if (selectedRoomId && targetDate) {
       fetchRoomSchedule();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRoomId, targetDate]);
 
   const fetchActiveRooms = async () => {

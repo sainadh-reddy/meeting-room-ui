@@ -1,0 +1,9 @@
+{
+  "short_name": "MRBS",
+  "name": "Meeting Room Booking System",
+  "icons": [],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#1F3C92",
+  "background_color": "#ffffff"
+}

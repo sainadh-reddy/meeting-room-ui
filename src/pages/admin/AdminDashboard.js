@@ -20,7 +20,6 @@ const AdminDashboard = () => {
   });
   const [allBookings, setAllBookings] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState('ALL'); // 'ALL', 'Upcoming', 'Ongoing', 'Completed', 'Cancelled'
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchDashboardData();
@@ -36,8 +35,6 @@ const AdminDashboard = () => {
       setAllBookings(bookingsRes.data);
     } catch (err) {
       console.error('Failed to load admin stats:', err);
-    } finally {
-      setLoading(false);
     }
   };
 
