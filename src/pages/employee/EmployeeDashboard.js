@@ -164,7 +164,13 @@ const EmployeeDashboard = () => {
                       label={b.status}
                       size="small"
                       color={
-                        b.status === 'Cancelled' ? 'error' : b.status === 'Completed' ? 'success' : 'primary'
+                        b.status === 'Cancelled'
+                          ? 'error'
+                          : b.status === 'Completed'
+                          ? 'success'
+                          : b.status === 'Ongoing'
+                          ? 'warning'
+                          : 'primary'
                       }
                     />
                   </TableCell>
