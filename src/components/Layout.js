@@ -12,7 +12,7 @@ const Layout = () => {
   };
 
   return (
-    <Box display="flex" minHeight="100vh" bgcolor="#F4F6F9" flexDirection="column" sx={{ overflowX: 'hidden' }}>
+    <Box display="flex" height="100vh" maxHeight="100vh" bgcolor="#F4F6F9" flexDirection="column" sx={{ overflow: 'hidden' }}>
       {/* Mobile Top App Bar (Visible on xs & sm screens) */}
       <AppBar
         position="sticky"
@@ -22,6 +22,7 @@ const Layout = () => {
           color: '#ffffff',
           display: { xs: 'flex', md: 'none' },
           zIndex: 1100,
+          flexShrink: 0,
         }}
       >
         <Toolbar>
@@ -58,7 +59,7 @@ const Layout = () => {
         </Toolbar>
       </AppBar>
 
-      <Box display="flex" flexGrow={1}>
+      <Box display="flex" flexGrow={1} sx={{ height: { xs: 'calc(100vh - 56px)', md: '100vh' }, overflow: 'hidden' }}>
         {/* Sidebar Component (Mobile Drawer & Desktop Fixed) */}
         <Sidebar mobileOpen={mobileOpen} onClose={handleDrawerToggle} />
 
@@ -67,14 +68,22 @@ const Layout = () => {
           component="main"
           sx={{
             flexGrow: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            height: '100%',
+            overflow: 'hidden',
             ml: { xs: 0, md: '260px' },
-            p: { xs: 2, sm: 3, md: 4 },
+            p: { xs: 2, sm: 3 },
             width: { xs: '100%', md: 'calc(100% - 260px)' },
-            minHeight: '100vh',
             boxSizing: 'border-box',
           }}
         >
-          <Container maxWidth="xl" disableGutters className="fade-in">
+          <Container
+            maxWidth="xl"
+            disableGutters
+            className="fade-in"
+            sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}
+          >
             <Outlet />
           </Container>
         </Box>

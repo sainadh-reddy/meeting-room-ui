@@ -112,18 +112,9 @@ const AvailableRooms = () => {
   };
 
   return (
-    <Box>
-      {/* Sticky Top Section: Header & Filter Toolbar */}
-      <Box
-        sx={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          bgcolor: '#F4F6F9',
-          pt: 1,
-          pb: 1,
-        }}
-      >
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+      {/* Fixed Top Section: Header & Search/Filter Toolbar */}
+      <Box sx={{ flexShrink: 0, mb: 2 }}>
         <Box mb={2}>
           <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.1rem' } }}>
             Available Meeting Spaces (Hyderabad)
@@ -139,131 +130,134 @@ const AvailableRooms = () => {
           </Alert>
         )}
 
-        <Paper sx={{ p: 2.5, borderRadius: 3, mb: 2, boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
-        <form onSubmit={handleFilterSearch}>
-          <Grid container spacing={2} alignItems="center">
-            {/* Campus Select */}
-            <Grid item xs={12} sm={6} md={2}>
-              <TextField
-                select
-                fullWidth
-                label="Building / Campus"
-                value={filters.campus}
-                onChange={(e) => setFilters({ ...filters, campus: e.target.value })}
-                size="small"
-              >
-                <MenuItem value="ALL">All Buildings</MenuItem>
-                <MenuItem value="Campus ATC">Campus ATC</MenuItem>
-                <MenuItem value="Capital ATC">Capital ATC</MenuItem>
-              </TextField>
-            </Grid>
+        <Paper sx={{ p: 2.5, borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
+          <form onSubmit={handleFilterSearch}>
+            <Grid container spacing={2} alignItems="center">
+              {/* Campus Select */}
+              <Grid item xs={12} sm={6} md={2}>
+                <TextField
+                  select
+                  fullWidth
+                  label="Building / Campus"
+                  value={filters.campus}
+                  onChange={(e) => setFilters({ ...filters, campus: e.target.value })}
+                  size="small"
+                >
+                  <MenuItem value="ALL">All Buildings</MenuItem>
+                  <MenuItem value="Campus ATC">Campus ATC</MenuItem>
+                  <MenuItem value="Capital ATC">Capital ATC</MenuItem>
+                </TextField>
+              </Grid>
 
-            {/* Block Select */}
-            <Grid item xs={12} sm={6} md={2}>
-              <TextField
-                select
-                fullWidth
-                label="Block"
-                value={filters.block}
-                onChange={(e) => setFilters({ ...filters, block: e.target.value })}
-                size="small"
-              >
-                <MenuItem value="ALL">All Blocks</MenuItem>
-                <MenuItem value="A Block">A Block</MenuItem>
-                <MenuItem value="B Block">B Block</MenuItem>
-              </TextField>
-            </Grid>
+              {/* Block Select */}
+              <Grid item xs={12} sm={6} md={2}>
+                <TextField
+                  select
+                  fullWidth
+                  label="Block"
+                  value={filters.block}
+                  onChange={(e) => setFilters({ ...filters, block: e.target.value })}
+                  size="small"
+                >
+                  <MenuItem value="ALL">All Blocks</MenuItem>
+                  <MenuItem value="A Block">A Block</MenuItem>
+                  <MenuItem value="B Block">B Block</MenuItem>
+                </TextField>
+              </Grid>
 
-            {/* VC / Non-VC Select */}
-            <Grid item xs={12} sm={6} md={2}>
-              <TextField
-                select
-                fullWidth
-                label="VC Facility"
-                value={filters.vcFacility}
-                onChange={(e) => setFilters({ ...filters, vcFacility: e.target.value })}
-                size="small"
-              >
-                <MenuItem value="ALL">All Facilities</MenuItem>
-                <MenuItem value="VC">VC (Video Conf)</MenuItem>
-                <MenuItem value="Non-VC">Non-VC</MenuItem>
-              </TextField>
-            </Grid>
+              {/* VC / Non-VC Select */}
+              <Grid item xs={12} sm={6} md={2}>
+                <TextField
+                  select
+                  fullWidth
+                  label="VC Facility"
+                  value={filters.vcFacility}
+                  onChange={(e) => setFilters({ ...filters, vcFacility: e.target.value })}
+                  size="small"
+                >
+                  <MenuItem value="ALL">All Facilities</MenuItem>
+                  <MenuItem value="VC">VC (Video Conf)</MenuItem>
+                  <MenuItem value="Non-VC">Non-VC</MenuItem>
+                </TextField>
+              </Grid>
 
-            {/* Floor Input */}
-            <Grid item xs={12} sm={6} md={2}>
-              <TextField
-                fullWidth
-                label="Floor / Level"
-                placeholder="e.g. Ground Floor, Level 1"
-                value={filters.floor}
-                onChange={(e) => setFilters({ ...filters, floor: e.target.value })}
-                size="small"
-              />
-            </Grid>
+              {/* Floor Input */}
+              <Grid item xs={12} sm={6} md={2}>
+                <TextField
+                  fullWidth
+                  label="Floor / Level"
+                  placeholder="e.g. Ground Floor, Level 1"
+                  value={filters.floor}
+                  onChange={(e) => setFilters({ ...filters, floor: e.target.value })}
+                  size="small"
+                />
+              </Grid>
 
-            {/* Min Capacity */}
-            <Grid item xs={12} sm={6} md={2}>
-              <TextField
-                fullWidth
-                type="number"
-                label="Min Capacity"
-                placeholder="e.g. 6"
-                value={filters.minCapacity}
-                onChange={(e) => setFilters({ ...filters, minCapacity: e.target.value })}
-                size="small"
-              />
-            </Grid>
+              {/* Min Capacity */}
+              <Grid item xs={12} sm={6} md={2}>
+                <TextField
+                  fullWidth
+                  type="number"
+                  label="Min Capacity"
+                  placeholder="e.g. 6"
+                  value={filters.minCapacity}
+                  onChange={(e) => setFilters({ ...filters, minCapacity: e.target.value })}
+                  size="small"
+                />
+              </Grid>
 
-            {/* Filter & Reset Buttons */}
-            <Grid item xs={12} sm={6} md={2} display="flex" gap={1} justifyContent="flex-end">
-              <Button
-                type="submit"
-                variant="contained"
-                sx={{
-                  bgcolor: '#002855',
-                  '&:hover': { bgcolor: '#001835' },
-                  py: 0.9,
-                  px: 2.5,
-                  fontSize: '0.85rem',
-                  flexGrow: 1,
-                }}
-              >
-                Filter
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={handleResetFilters}
-                sx={{ py: 0.9, px: 1.5, minWidth: 'auto' }}
-                title="Reset Filters"
-              >
-                <FilterAltOffIcon fontSize="small" />
-              </Button>
+              {/* Filter & Reset Buttons */}
+              <Grid item xs={12} sm={6} md={2} display="flex" gap={1} justifyContent="flex-end">
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    bgcolor: '#002855',
+                    '&:hover': { bgcolor: '#001835' },
+                    py: 0.9,
+                    px: 2.5,
+                    fontSize: '0.85rem',
+                    flexGrow: 1,
+                  }}
+                >
+                  Filter
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={handleResetFilters}
+                  sx={{ py: 0.9, px: 1.5, minWidth: 'auto' }}
+                  title="Reset Filters"
+                >
+                  <FilterAltOffIcon fontSize="small" />
+                </Button>
+              </Grid>
             </Grid>
-          </Grid>
-        </form>
-      </Paper>
+          </form>
+        </Paper>
       </Box>
 
-      <Grid container spacing={3}>
-        {rooms.map((room) => (
-          <Grid item xs={12} sm={6} md={4} key={room.id} display="flex">
-            <RoomCard
-              room={room}
-              isAdmin={false}
-              isAvailable={room.isAvailable}
-              onBook={handleOpenBook}
-            />
-          </Grid>
-        ))}
-        {rooms.length === 0 && (
-          <Grid item xs={12}>
-            <Typography color="text.secondary" align="center" my={4}>
-              No active meeting rooms available matching filters.
-            </Typography>
-          </Grid>
-        )}
-      </Grid>
+      {/* Scrollable Room Cards Data Grid Section */}
+      <Box sx={{ flexGrow: 1, overflowY: 'auto', pr: 0.5, pb: 2 }}>
+        <Grid container spacing={3}>
+          {rooms.map((room) => (
+            <Grid item xs={12} sm={6} md={4} key={room.id} display="flex">
+              <RoomCard
+                room={room}
+                isAdmin={false}
+                isAvailable={room.isAvailable}
+                onBook={handleOpenBook}
+              />
+            </Grid>
+          ))}
+          {rooms.length === 0 && (
+            <Grid item xs={12}>
+              <Typography color="text.secondary" align="center" my={4}>
+                No active meeting rooms available matching filters.
+              </Typography>
+            </Grid>
+          )}
+        </Grid>
+      </Box>
 
       <BookRoomModal
         open={openBookModal}

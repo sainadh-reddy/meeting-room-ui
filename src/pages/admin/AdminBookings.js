@@ -71,18 +71,19 @@ const AdminBookings = () => {
   });
 
   return (
-    <Box>
-      <Box mb={4}>
-        <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.1rem' } }}>
-          Organization Bookings Directory
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Monitor real-time dynamic meeting statuses and manage room reservations company-wide
-        </Typography>
-      </Box>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+      {/* Fixed Top Section: Header & Search Input */}
+      <Box sx={{ flexShrink: 0, mb: 2 }}>
+        <Box mb={2}>
+          <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.1rem' } }}>
+            Organization Bookings Directory
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Monitor real-time dynamic meeting statuses and manage room reservations company-wide
+          </Typography>
+        </Box>
 
-      <Paper sx={{ p: 3, borderRadius: 3 }}>
-        <Box mb={3}>
+        <Paper sx={{ p: 2.5, borderRadius: 3, boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
           <TextField
             fullWidth
             placeholder="Search by meeting title, room name, user name, or email..."
@@ -97,21 +98,24 @@ const AdminBookings = () => {
               ),
             }}
           />
-        </Box>
+        </Paper>
+      </Box>
 
-        <TableContainer sx={{ overflowX: 'auto', boxShadow: 'none' }}>
-          <Table sx={{ minWidth: 700 }}>
+      {/* Scrollable Data Section: Bookings Directory Table */}
+      <Paper sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', p: { xs: 2, sm: 3 }, borderRadius: 3 }}>
+        <TableContainer sx={{ flexGrow: 1, overflowY: 'auto', overflowX: 'auto', boxShadow: 'none' }}>
+          <Table sx={{ minWidth: 700 }} stickyHeader>
             <TableHead>
-              <TableRow sx={{ bgcolor: '#F8FAFC' }}>
-                <TableCell sx={{ fontWeight: 600 }}>ID</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Meeting Title</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Room</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>User / Organizer</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Time</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Recurrence</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Dynamic Status</TableCell>
-                <TableCell sx={{ fontWeight: 600 }} align="center">
+              <TableRow>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }}>ID</TableCell>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }}>Meeting Title</TableCell>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }}>Room</TableCell>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }}>User / Organizer</TableCell>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }}>Date</TableCell>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }}>Time</TableCell>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }}>Recurrence</TableCell>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }}>Dynamic Status</TableCell>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }} align="center">
                   Action
                 </TableCell>
               </TableRow>

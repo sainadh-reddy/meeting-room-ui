@@ -78,18 +78,9 @@ const AdminDashboard = () => {
   });
 
   return (
-    <Box>
-      {/* Sticky Top Section: Header & Interactive Stats Metric Cards */}
-      <Box
-        sx={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          bgcolor: '#F4F6F9',
-          pt: 1,
-          pb: 2,
-        }}
-      >
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+      {/* Fixed Top Section: Header & Interactive Stats Metric Cards */}
+      <Box sx={{ flexShrink: 0, mb: 2 }}>
         <Box mb={2}>
           <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.1rem' } }}>
             Admin Control Dashboard
@@ -154,9 +145,9 @@ const AdminDashboard = () => {
         </Grid>
       </Box>
 
-      {/* Bookings Data Section (Independent Scroll Container) */}
-      <Paper sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3, mt: 1 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+      {/* Scrollable Data Section: Bookings Table */}
+      <Paper sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', p: { xs: 2, sm: 3 }, borderRadius: 3 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} sx={{ flexShrink: 0 }}>
           <Typography variant="h6" fontWeight={700} sx={{ fontSize: { xs: '1rem', sm: '1.15rem' } }}>
             Organization Bookings {selectedFilter !== 'ALL' ? `(${selectedFilter})` : ''}
           </Typography>
@@ -173,7 +164,7 @@ const AdminDashboard = () => {
           )}
         </Box>
 
-        <TableContainer sx={{ overflowX: 'auto', maxHeight: 'calc(100vh - 360px)', overflowY: 'auto', boxShadow: 'none' }}>
+        <TableContainer sx={{ flexGrow: 1, overflowY: 'auto', overflowX: 'auto', boxShadow: 'none' }}>
           <Table sx={{ minWidth: 600 }} stickyHeader>
             <TableHead>
               <TableRow>

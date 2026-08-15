@@ -70,18 +70,9 @@ const EmployeeDashboard = () => {
   });
 
   return (
-    <Box>
-      {/* Sticky Top Section: Header & Stats Cards */}
-      <Box
-        sx={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          bgcolor: '#F4F6F9',
-          pt: 1,
-          pb: 2,
-        }}
-      >
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+      {/* Fixed Top Section: Header & Stats Cards */}
+      <Box sx={{ flexShrink: 0, mb: 2 }}>
         <Box
           display="flex"
           flexDirection={{ xs: 'column', sm: 'row' }}
@@ -161,9 +152,9 @@ const EmployeeDashboard = () => {
         </Grid>
       </Box>
 
-      {/* Personal Meetings Data Table Section (Independent Scroll) */}
-      <Paper sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3, mt: 1 }}>
-        <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={1.5} mb={2}>
+      {/* Scrollable Personal Meetings Table Section */}
+      <Paper sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', p: { xs: 2, sm: 3 }, borderRadius: 3 }}>
+        <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={1.5} mb={2} sx={{ flexShrink: 0 }}>
           <Typography variant="h6" fontWeight={700} sx={{ fontSize: { xs: '1rem', sm: '1.15rem' } }}>
             Your Scheduled Meetings {selectedFilter !== 'ALL' ? `(${selectedFilter})` : ''}
           </Typography>
@@ -185,7 +176,7 @@ const EmployeeDashboard = () => {
           </Box>
         </Box>
 
-        <TableContainer sx={{ overflowX: 'auto', maxHeight: 'calc(100vh - 360px)', overflowY: 'auto', boxShadow: 'none' }}>
+        <TableContainer sx={{ flexGrow: 1, overflowY: 'auto', overflowX: 'auto', boxShadow: 'none' }}>
           <Table sx={{ minWidth: 600 }} stickyHeader>
             <TableHead>
               <TableRow>
@@ -198,7 +189,7 @@ const EmployeeDashboard = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {displayedBookings.slice(0, 8).map((b) => {
+              {displayedBookings.slice(0, 15).map((b) => {
                 const chipProps = getStatusChipProps(b.dynamicStatus);
                 return (
                   <TableRow key={b.id} hover>

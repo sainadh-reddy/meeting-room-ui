@@ -174,18 +174,9 @@ const AdminRooms = () => {
   });
 
   return (
-    <Box>
-      {/* Sticky Top Section: Header & Filter Toolbar */}
-      <Box
-        sx={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 10,
-          bgcolor: '#F4F6F9',
-          pt: 1,
-          pb: 1,
-        }}
-      >
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+      {/* Fixed Top Section: Header & Filter Toolbar */}
+      <Box sx={{ flexShrink: 0, mb: 2 }}>
         <Box
           display="flex"
           flexDirection={{ xs: 'column', sm: 'row' }}
@@ -227,7 +218,7 @@ const AdminRooms = () => {
         )}
 
         {/* Filter & Search Toolbar */}
-        <Paper sx={{ p: 2.5, borderRadius: 3, mb: 2, bgcolor: '#ffffff', boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
+        <Paper sx={{ p: 2.5, borderRadius: 3, bgcolor: '#ffffff', boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} sm={6} md={3}>
               <TextField
@@ -345,31 +336,33 @@ const AdminRooms = () => {
         </Paper>
       </Box>
 
-      {/* Rooms Grid */}
-      <Grid container spacing={3}>
-        {filteredRooms.map((room) => (
-          <Grid item xs={12} sm={6} md={4} key={room.id} display="flex">
-            <RoomCard
-              room={room}
-              isAdmin={true}
-              onEdit={handleOpenEdit}
-              onToggleStatus={handleToggleStatus}
-            />
-          </Grid>
-        ))}
-        {filteredRooms.length === 0 && (
-          <Grid item xs={12}>
-            <Paper sx={{ p: 4, textAlign: 'center', borderRadius: 3 }}>
-              <Typography variant="h6" color="text.secondary">
-                No rooms match the selected filter criteria.
-              </Typography>
-              <Button size="small" onClick={handleResetFilters} sx={{ mt: 1 }}>
-                Reset Filters
-              </Button>
-            </Paper>
-          </Grid>
-        )}
-      </Grid>
+      {/* Scrollable Room Cards Data Grid Section */}
+      <Box sx={{ flexGrow: 1, overflowY: 'auto', pr: 0.5, pb: 2 }}>
+        <Grid container spacing={3}>
+          {filteredRooms.map((room) => (
+            <Grid item xs={12} sm={6} md={4} key={room.id} display="flex">
+              <RoomCard
+                room={room}
+                isAdmin={true}
+                onEdit={handleOpenEdit}
+                onToggleStatus={handleToggleStatus}
+              />
+            </Grid>
+          ))}
+          {filteredRooms.length === 0 && (
+            <Grid item xs={12}>
+              <Paper sx={{ p: 4, textAlign: 'center', borderRadius: 3 }}>
+                <Typography variant="h6" color="text.secondary">
+                  No rooms match the selected filter criteria.
+                </Typography>
+                <Button size="small" onClick={handleResetFilters} sx={{ mt: 1 }}>
+                  Reset Filters
+                </Button>
+              </Paper>
+            </Grid>
+          )}
+        </Grid>
+      </Box>
 
       {/* Add / Edit Dialog */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)} maxWidth="md" fullWidth>
