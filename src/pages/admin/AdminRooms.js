@@ -175,163 +175,175 @@ const AdminRooms = () => {
 
   return (
     <Box>
+      {/* Sticky Top Section: Header & Filter Toolbar */}
       <Box
-        display="flex"
-        flexDirection={{ xs: 'column', sm: 'row' }}
-        justifyContent="space-between"
-        alignItems={{ xs: 'flex-start', sm: 'center' }}
-        gap={2}
-        mb={4}
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          bgcolor: '#F4F6F9',
+          pt: 1,
+          pb: 1,
+        }}
       >
-        <Box>
-          <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.1rem' } }}>
-            Meeting Rooms Inventory ({filteredRooms.length} / {rooms.length})
-          </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.85rem', sm: '1rem' } }}>
-            Filter and manage corporate rooms, VC hardware facilities, seating limits, and zones
-          </Typography>
-        </Box>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={handleOpenAdd}
-          sx={{
-            bgcolor: '#002855',
-            '&:hover': { bgcolor: '#001835' },
-            px: 2.5,
-            py: 0.9,
-            fontSize: '0.875rem',
-            alignSelf: { xs: 'flex-start', sm: 'auto' },
-            whiteSpace: 'nowrap',
-          }}
+        <Box
+          display="flex"
+          flexDirection={{ xs: 'column', sm: 'row' }}
+          justifyContent="space-between"
+          alignItems={{ xs: 'flex-start', sm: 'center' }}
+          gap={2}
+          mb={2}
         >
-          Add New Room
-        </Button>
+          <Box>
+            <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.1rem' } }}>
+              Meeting Rooms Inventory ({filteredRooms.length} / {rooms.length})
+            </Typography>
+            <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.85rem', sm: '1rem' } }}>
+              Filter and manage corporate rooms, VC hardware facilities, seating limits, and zones
+            </Typography>
+          </Box>
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={handleOpenAdd}
+            sx={{
+              bgcolor: '#002855',
+              '&:hover': { bgcolor: '#001835' },
+              px: 2.5,
+              py: 0.9,
+              fontSize: '0.875rem',
+              alignSelf: { xs: 'flex-start', sm: 'auto' },
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Add New Room
+          </Button>
+        </Box>
+
+        {msg && (
+          <Alert severity="success" sx={{ mb: 2 }} onClose={() => setMsg('')}>
+            {msg}
+          </Alert>
+        )}
+
+        {/* Filter & Search Toolbar */}
+        <Paper sx={{ p: 2.5, borderRadius: 3, mb: 2, bgcolor: '#ffffff', boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} sm={6} md={3}>
+              <TextField
+                fullWidth
+                size="small"
+                placeholder="Search by name, zone, facilities..."
+                value={filters.search}
+                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon color="action" fontSize="small" />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+            </Grid>
+
+            <Grid item xs={6} sm={3} md={2}>
+              <TextField
+                select
+                fullWidth
+                size="small"
+                label="Campus"
+                value={filters.campus}
+                onChange={(e) => setFilters({ ...filters, campus: e.target.value })}
+              >
+                <MenuItem value="ALL">All Campuses</MenuItem>
+                <MenuItem value="Campus ATC">Campus ATC</MenuItem>
+                <MenuItem value="Capital ATC">Capital ATC</MenuItem>
+              </TextField>
+            </Grid>
+
+            <Grid item xs={6} sm={3} md={1.5}>
+              <TextField
+                select
+                fullWidth
+                size="small"
+                label="Block"
+                value={filters.block}
+                onChange={(e) => setFilters({ ...filters, block: e.target.value })}
+              >
+                <MenuItem value="ALL">All Blocks</MenuItem>
+                <MenuItem value="A Block">A Block</MenuItem>
+                <MenuItem value="B Block">B Block</MenuItem>
+                <MenuItem value="N/A">N/A</MenuItem>
+              </TextField>
+            </Grid>
+
+            <Grid item xs={6} sm={3} md={1.5}>
+              <TextField
+                select
+                fullWidth
+                size="small"
+                label="VC Facility"
+                value={filters.vcFacility}
+                onChange={(e) => setFilters({ ...filters, vcFacility: e.target.value })}
+              >
+                <MenuItem value="ALL">All Types</MenuItem>
+                <MenuItem value="VC">VC (Video Conf)</MenuItem>
+                <MenuItem value="Non-VC">Non-VC</MenuItem>
+              </TextField>
+            </Grid>
+
+            <Grid item xs={6} sm={3} md={1.5}>
+              <TextField
+                select
+                fullWidth
+                size="small"
+                label="Floor"
+                value={filters.floor}
+                onChange={(e) => setFilters({ ...filters, floor: e.target.value })}
+              >
+                <MenuItem value="ALL">All Floors</MenuItem>
+                <MenuItem value="Ground Floor">Ground Floor</MenuItem>
+                <MenuItem value="Level 1">Level 1</MenuItem>
+                <MenuItem value="Level 2">Level 2</MenuItem>
+                <MenuItem value="Level 3">Level 3</MenuItem>
+                <MenuItem value="Level 4">Level 4</MenuItem>
+                <MenuItem value="Level 5">Level 5</MenuItem>
+                <MenuItem value="Level 6">Level 6</MenuItem>
+                <MenuItem value="3rd Floor">3rd Floor</MenuItem>
+                <MenuItem value="2nd Floor">2nd Floor</MenuItem>
+              </TextField>
+            </Grid>
+
+            <Grid item xs={6} sm={3} md={1.5}>
+              <TextField
+                select
+                fullWidth
+                size="small"
+                label="Status"
+                value={filters.status}
+                onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+              >
+                <MenuItem value="ALL">All Status</MenuItem>
+                <MenuItem value="Active">Active</MenuItem>
+                <MenuItem value="Inactive">Inactive</MenuItem>
+              </TextField>
+            </Grid>
+
+            <Grid item xs={12} sm={3} md={1} display="flex" justifyContent="flex-end">
+              <Button
+                variant="outlined"
+                size="small"
+                color="inherit"
+                onClick={handleResetFilters}
+                startIcon={<FilterAltOffIcon fontSize="small" />}
+                sx={{ whiteSpace: 'nowrap', py: 0.8 }}
+              >
+                Reset
+              </Button>
+            </Grid>
+          </Grid>
+        </Paper>
       </Box>
-
-      {msg && (
-        <Alert severity="success" sx={{ mb: 3 }} onClose={() => setMsg('')}>
-          {msg}
-        </Alert>
-      )}
-
-      {/* Filter & Search Toolbar */}
-      <Paper sx={{ p: 2.5, borderRadius: 3, mb: 4, bgcolor: '#ffffff', boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
-        <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} sm={6} md={3}>
-            <TextField
-              fullWidth
-              size="small"
-              placeholder="Search by name, zone, facilities..."
-              value={filters.search}
-              onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon color="action" fontSize="small" />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Grid>
-
-          <Grid item xs={6} sm={3} md={2}>
-            <TextField
-              select
-              fullWidth
-              size="small"
-              label="Campus"
-              value={filters.campus}
-              onChange={(e) => setFilters({ ...filters, campus: e.target.value })}
-            >
-              <MenuItem value="ALL">All Campuses</MenuItem>
-              <MenuItem value="Campus ATC">Campus ATC</MenuItem>
-              <MenuItem value="Capital ATC">Capital ATC</MenuItem>
-            </TextField>
-          </Grid>
-
-          <Grid item xs={6} sm={3} md={1.5}>
-            <TextField
-              select
-              fullWidth
-              size="small"
-              label="Block"
-              value={filters.block}
-              onChange={(e) => setFilters({ ...filters, block: e.target.value })}
-            >
-              <MenuItem value="ALL">All Blocks</MenuItem>
-              <MenuItem value="A Block">A Block</MenuItem>
-              <MenuItem value="B Block">B Block</MenuItem>
-              <MenuItem value="N/A">N/A</MenuItem>
-            </TextField>
-          </Grid>
-
-          <Grid item xs={6} sm={3} md={1.5}>
-            <TextField
-              select
-              fullWidth
-              size="small"
-              label="VC Facility"
-              value={filters.vcFacility}
-              onChange={(e) => setFilters({ ...filters, vcFacility: e.target.value })}
-            >
-              <MenuItem value="ALL">All Types</MenuItem>
-              <MenuItem value="VC">VC (Video Conf)</MenuItem>
-              <MenuItem value="Non-VC">Non-VC</MenuItem>
-            </TextField>
-          </Grid>
-
-          <Grid item xs={6} sm={3} md={1.5}>
-            <TextField
-              select
-              fullWidth
-              size="small"
-              label="Floor"
-              value={filters.floor}
-              onChange={(e) => setFilters({ ...filters, floor: e.target.value })}
-            >
-              <MenuItem value="ALL">All Floors</MenuItem>
-              <MenuItem value="Ground Floor">Ground Floor</MenuItem>
-              <MenuItem value="Level 1">Level 1</MenuItem>
-              <MenuItem value="Level 2">Level 2</MenuItem>
-              <MenuItem value="Level 3">Level 3</MenuItem>
-              <MenuItem value="Level 4">Level 4</MenuItem>
-              <MenuItem value="Level 5">Level 5</MenuItem>
-              <MenuItem value="Level 6">Level 6</MenuItem>
-              <MenuItem value="3rd Floor">3rd Floor</MenuItem>
-              <MenuItem value="2nd Floor">2nd Floor</MenuItem>
-            </TextField>
-          </Grid>
-
-          <Grid item xs={6} sm={3} md={1.5}>
-            <TextField
-              select
-              fullWidth
-              size="small"
-              label="Status"
-              value={filters.status}
-              onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-            >
-              <MenuItem value="ALL">All Status</MenuItem>
-              <MenuItem value="Active">Active</MenuItem>
-              <MenuItem value="Inactive">Inactive</MenuItem>
-            </TextField>
-          </Grid>
-
-          <Grid item xs={12} sm={3} md={1} display="flex" justifyContent="flex-end">
-            <Button
-              variant="outlined"
-              size="small"
-              color="inherit"
-              onClick={handleResetFilters}
-              startIcon={<FilterAltOffIcon fontSize="small" />}
-              sx={{ whiteSpace: 'nowrap', py: 0.8 }}
-            >
-              Reset
-            </Button>
-          </Grid>
-        </Grid>
-      </Paper>
 
       {/* Rooms Grid */}
       <Grid container spacing={3}>

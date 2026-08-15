@@ -113,22 +113,33 @@ const AvailableRooms = () => {
 
   return (
     <Box>
-      <Box mb={4}>
-        <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.1rem' } }}>
-          Available Meeting Spaces (Hyderabad)
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Browse and reserve equipped conference rooms across Campus ATC & Capital ATC
-        </Typography>
-      </Box>
+      {/* Sticky Top Section: Header & Filter Toolbar */}
+      <Box
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          bgcolor: '#F4F6F9',
+          pt: 1,
+          pb: 1,
+        }}
+      >
+        <Box mb={2}>
+          <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.1rem' } }}>
+            Available Meeting Spaces (Hyderabad)
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            Browse and reserve equipped conference rooms across Campus ATC & Capital ATC
+          </Typography>
+        </Box>
 
-      {successMsg && (
-        <Alert severity="success" sx={{ mb: 3 }} onClose={() => setSuccessMsg('')}>
-          {successMsg}
-        </Alert>
-      )}
+        {successMsg && (
+          <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSuccessMsg('')}>
+            {successMsg}
+          </Alert>
+        )}
 
-      <Paper sx={{ p: 3, borderRadius: 3, mb: 4 }}>
+        <Paper sx={{ p: 2.5, borderRadius: 3, mb: 2, boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
         <form onSubmit={handleFilterSearch}>
           <Grid container spacing={2} alignItems="center">
             {/* Campus Select */}
@@ -232,6 +243,7 @@ const AvailableRooms = () => {
           </Grid>
         </form>
       </Paper>
+      </Box>
 
       <Grid container spacing={3}>
         {rooms.map((room) => (

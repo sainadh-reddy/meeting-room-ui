@@ -71,87 +71,98 @@ const EmployeeDashboard = () => {
 
   return (
     <Box>
-      {/* Header Row */}
+      {/* Sticky Top Section: Header & Stats Cards */}
       <Box
-        display="flex"
-        flexDirection={{ xs: 'column', sm: 'row' }}
-        justifyContent="space-between"
-        alignItems={{ xs: 'flex-start', sm: 'center' }}
-        gap={2}
-        mb={4}
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          bgcolor: '#F4F6F9',
+          pt: 1,
+          pb: 2,
+        }}
       >
-        <Box>
-          <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.1rem' } }}>
-            Welcome back, {user?.name || 'Employee'}!
-          </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.85rem', sm: '1rem' } }}>
-            Real-time dynamic meeting status tracking across corporate spaces
-          </Typography>
-        </Box>
-        <Button
-          variant="contained"
-          startIcon={<AddCircleOutlineIcon />}
-          onClick={() => navigate('/employee/rooms')}
-          sx={{
-            bgcolor: '#002855',
-            '&:hover': { bgcolor: '#001835' },
-            px: 2.5,
-            py: 0.9,
-            fontSize: '0.875rem',
-            alignSelf: { xs: 'flex-start', sm: 'auto' },
-            whiteSpace: 'nowrap',
-          }}
+        <Box
+          display="flex"
+          flexDirection={{ xs: 'column', sm: 'row' }}
+          justifyContent="space-between"
+          alignItems={{ xs: 'flex-start', sm: 'center' }}
+          gap={2}
+          mb={2}
         >
-          Book a Room
-        </Button>
+          <Box>
+            <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.1rem' } }}>
+              Welcome back, {user?.name || 'Employee'}!
+            </Typography>
+            <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.85rem', sm: '1rem' } }}>
+              Real-time dynamic meeting status tracking across corporate spaces
+            </Typography>
+          </Box>
+          <Button
+            variant="contained"
+            startIcon={<AddCircleOutlineIcon />}
+            onClick={() => navigate('/employee/rooms')}
+            sx={{
+              bgcolor: '#002855',
+              '&:hover': { bgcolor: '#001835' },
+              px: 2.5,
+              py: 0.9,
+              fontSize: '0.875rem',
+              alignSelf: { xs: 'flex-start', sm: 'auto' },
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Book a Room
+          </Button>
+        </Box>
+
+        {/* Stats Cards */}
+        <Grid container spacing={2.5}>
+          <Grid item xs={12} sm={3} display="flex">
+            <StatsCard
+              title="Total Reservations"
+              value={myBookings.length}
+              icon={CalendarMonthIcon}
+              color="#002855"
+              active={selectedFilter === 'ALL'}
+              onClick={() => setSelectedFilter('ALL')}
+            />
+          </Grid>
+          <Grid item xs={12} sm={3} display="flex">
+            <StatsCard
+              title="Ongoing Now"
+              value={ongoingCount}
+              icon={PlayCircleOutlineIcon}
+              color="#EA580C"
+              active={selectedFilter === 'Ongoing'}
+              onClick={() => handleCardClick('Ongoing')}
+            />
+          </Grid>
+          <Grid item xs={12} sm={3} display="flex">
+            <StatsCard
+              title="Upcoming Meetings"
+              value={upcomingCount}
+              icon={EventAvailableIcon}
+              color="#2563EB"
+              active={selectedFilter === 'Upcoming'}
+              onClick={() => handleCardClick('Upcoming')}
+            />
+          </Grid>
+          <Grid item xs={12} sm={3} display="flex">
+            <StatsCard
+              title="Completed Meetings"
+              value={completedCount}
+              icon={EventAvailableIcon}
+              color="#10B981"
+              active={selectedFilter === 'Completed'}
+              onClick={() => handleCardClick('Completed')}
+            />
+          </Grid>
+        </Grid>
       </Box>
 
-      {/* Stats Cards */}
-      <Grid container spacing={2.5} mb={4}>
-        <Grid item xs={12} sm={3} display="flex">
-          <StatsCard
-            title="Total Reservations"
-            value={myBookings.length}
-            icon={CalendarMonthIcon}
-            color="#002855"
-            active={selectedFilter === 'ALL'}
-            onClick={() => setSelectedFilter('ALL')}
-          />
-        </Grid>
-        <Grid item xs={12} sm={3} display="flex">
-          <StatsCard
-            title="Ongoing Now"
-            value={ongoingCount}
-            icon={PlayCircleOutlineIcon}
-            color="#EA580C"
-            active={selectedFilter === 'Ongoing'}
-            onClick={() => handleCardClick('Ongoing')}
-          />
-        </Grid>
-        <Grid item xs={12} sm={3} display="flex">
-          <StatsCard
-            title="Upcoming Meetings"
-            value={upcomingCount}
-            icon={EventAvailableIcon}
-            color="#2563EB"
-            active={selectedFilter === 'Upcoming'}
-            onClick={() => handleCardClick('Upcoming')}
-          />
-        </Grid>
-        <Grid item xs={12} sm={3} display="flex">
-          <StatsCard
-            title="Completed Meetings"
-            value={completedCount}
-            icon={EventAvailableIcon}
-            color="#10B981"
-            active={selectedFilter === 'Completed'}
-            onClick={() => handleCardClick('Completed')}
-          />
-        </Grid>
-      </Grid>
-
-      {/* Personal Meetings Table */}
-      <Paper sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3 }}>
+      {/* Personal Meetings Data Table Section (Independent Scroll) */}
+      <Paper sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3, mt: 1 }}>
         <Box display="flex" flexDirection={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={1.5} mb={2}>
           <Typography variant="h6" fontWeight={700} sx={{ fontSize: { xs: '1rem', sm: '1.15rem' } }}>
             Your Scheduled Meetings {selectedFilter !== 'ALL' ? `(${selectedFilter})` : ''}
@@ -174,16 +185,16 @@ const EmployeeDashboard = () => {
           </Box>
         </Box>
 
-        <TableContainer sx={{ overflowX: 'auto', boxShadow: 'none' }}>
-          <Table sx={{ minWidth: 600 }}>
+        <TableContainer sx={{ overflowX: 'auto', maxHeight: 'calc(100vh - 360px)', overflowY: 'auto', boxShadow: 'none' }}>
+          <Table sx={{ minWidth: 600 }} stickyHeader>
             <TableHead>
-              <TableRow sx={{ bgcolor: '#F8FAFC' }}>
-                <TableCell sx={{ fontWeight: 600 }}>Title</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Room</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Time</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Participants</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Dynamic Status</TableCell>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }}>Title</TableCell>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }}>Room</TableCell>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }}>Date</TableCell>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }}>Time</TableCell>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }}>Participants</TableCell>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }}>Dynamic Status</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

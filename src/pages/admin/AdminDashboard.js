@@ -79,71 +79,83 @@ const AdminDashboard = () => {
 
   return (
     <Box>
-      <Box mb={4}>
-        <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.1rem' } }}>
-          Admin Control Dashboard
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.85rem', sm: '1rem' } }}>
-          Real-time corporate room utilization & live dynamic meeting statuses
-        </Typography>
+      {/* Sticky Top Section: Header & Interactive Stats Metric Cards */}
+      <Box
+        sx={{
+          position: 'sticky',
+          top: 0,
+          zIndex: 10,
+          bgcolor: '#F4F6F9',
+          pt: 1,
+          pb: 2,
+        }}
+      >
+        <Box mb={2}>
+          <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.1rem' } }}>
+            Admin Control Dashboard
+          </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.85rem', sm: '1rem' } }}>
+            Real-time corporate room utilization & live dynamic meeting statuses
+          </Typography>
+        </Box>
+
+        {/* Stats Overview with Interactive Card Filtering */}
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6} md={2.4} display="flex">
+            <StatsCard
+              title="Total Rooms"
+              value={stats.totalRooms || 0}
+              icon={MeetingRoomIcon}
+              color="#002855"
+              active={selectedFilter === 'ALL'}
+              onClick={() => setSelectedFilter('ALL')}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={2.4} display="flex">
+            <StatsCard
+              title="Upcoming"
+              value={upcomingCount}
+              icon={EventAvailableIcon}
+              color="#0EA5E9"
+              active={selectedFilter === 'Upcoming'}
+              onClick={() => handleCardClick('Upcoming')}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={2.4} display="flex">
+            <StatsCard
+              title="Ongoing Now"
+              value={ongoingCount}
+              icon={HourglassTopIcon}
+              color="#F59E0B"
+              active={selectedFilter === 'Ongoing'}
+              onClick={() => handleCardClick('Ongoing')}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={2.4} display="flex">
+            <StatsCard
+              title="Completed"
+              value={completedCount}
+              icon={CheckCircleIcon}
+              color="#10B981"
+              active={selectedFilter === 'Completed'}
+              onClick={() => handleCardClick('Completed')}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6} md={2.4} display="flex">
+            <StatsCard
+              title="Cancelled"
+              value={cancelledCount}
+              icon={CancelIcon}
+              color="#EF4444"
+              active={selectedFilter === 'Cancelled'}
+              onClick={() => handleCardClick('Cancelled')}
+            />
+          </Grid>
+        </Grid>
       </Box>
 
-      {/* Stats Overview with Interactive Card Filtering */}
-      <Grid container spacing={2} mb={4}>
-        <Grid item xs={12} sm={6} md={2.4} display="flex">
-          <StatsCard
-            title="Total Rooms"
-            value={stats.totalRooms || 0}
-            icon={MeetingRoomIcon}
-            color="#002855"
-            active={selectedFilter === 'ALL'}
-            onClick={() => setSelectedFilter('ALL')}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={2.4} display="flex">
-          <StatsCard
-            title="Upcoming"
-            value={upcomingCount}
-            icon={EventAvailableIcon}
-            color="#0EA5E9"
-            active={selectedFilter === 'Upcoming'}
-            onClick={() => handleCardClick('Upcoming')}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={2.4} display="flex">
-          <StatsCard
-            title="Ongoing Now"
-            value={ongoingCount}
-            icon={HourglassTopIcon}
-            color="#F59E0B"
-            active={selectedFilter === 'Ongoing'}
-            onClick={() => handleCardClick('Ongoing')}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={2.4} display="flex">
-          <StatsCard
-            title="Completed"
-            value={completedCount}
-            icon={CheckCircleIcon}
-            color="#10B981"
-            active={selectedFilter === 'Completed'}
-            onClick={() => handleCardClick('Completed')}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6} md={2.4} display="flex">
-          <StatsCard
-            title="Cancelled"
-            value={cancelledCount}
-            icon={CancelIcon}
-            color="#EF4444"
-            active={selectedFilter === 'Cancelled'}
-            onClick={() => handleCardClick('Cancelled')}
-          />
-        </Grid>
-      </Grid>
-
-      {/* Bookings Table */}
-      <Paper sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3 }}>
+      {/* Bookings Data Section (Independent Scroll Container) */}
+      <Paper sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3, mt: 1 }}>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography variant="h6" fontWeight={700} sx={{ fontSize: { xs: '1rem', sm: '1.15rem' } }}>
             Organization Bookings {selectedFilter !== 'ALL' ? `(${selectedFilter})` : ''}
@@ -161,17 +173,17 @@ const AdminDashboard = () => {
           )}
         </Box>
 
-        <TableContainer sx={{ overflowX: 'auto', boxShadow: 'none' }}>
-          <Table sx={{ minWidth: 600 }}>
+        <TableContainer sx={{ overflowX: 'auto', maxHeight: 'calc(100vh - 360px)', overflowY: 'auto', boxShadow: 'none' }}>
+          <Table sx={{ minWidth: 600 }} stickyHeader>
             <TableHead>
-              <TableRow sx={{ bgcolor: '#F8FAFC' }}>
-                <TableCell sx={{ fontWeight: 600 }}>ID</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Title</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Room</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>User</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Time</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Dynamic Status</TableCell>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }}>ID</TableCell>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }}>Title</TableCell>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }}>Room</TableCell>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }}>User</TableCell>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }}>Date</TableCell>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }}>Time</TableCell>
+                <TableCell sx={{ fontWeight: 600, bgcolor: '#F8FAFC' }}>Dynamic Status</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
