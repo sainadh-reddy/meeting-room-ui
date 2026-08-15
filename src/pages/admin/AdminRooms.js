@@ -11,8 +11,12 @@ import {
   TextField,
   MenuItem,
   Alert,
+  Paper,
+  InputAdornment,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import SearchIcon from '@mui/icons-material/Search';
+import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import RoomCard from '../../components/RoomCard';
 import api from '../../api/api';
 
@@ -20,6 +24,18 @@ const AdminRooms = () => {
   const [rooms, setRooms] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingRoom, setEditingRoom] = useState(null);
+  
+  // Filter States
+  const [filters, setFilters] = useState({
+    search: '',
+    campus: 'ALL',
+    block: 'ALL',
+    vcFacility: 'ALL',
+    floor: 'ALL',
+    minCapacity: '',
+    status: 'ALL',
+  });
+
   const [formData, setFormData] = useState({
     name: '',
     location: 'Hyd',
@@ -112,6 +128,51 @@ const AdminRooms = () => {
     }
   };
 
+  const handleResetFilters = () => {
+    setFilters({
+      search: '',
+      campus: 'ALL',
+      block: 'ALL',
+      vcFacility: 'ALL',
+      floor: 'ALL',
+      minCapacity: '',
+      status: 'ALL',
+    });
+  };
+
+  // Filtered rooms logic
+  const filteredRooms = rooms.filter((r) => {
+    // Search keyword
+    if (filters.search) {
+      const q = filters.search.toLowerCase();
+      const matchName = r.name?.toLowerCase().includes(q);
+      const matchZone = r.zone?.toLowerCase().includes(q);
+      const matchRemarks = r.remarks?.toLowerCase().includes(q);
+      const matchFac = r.facilities?.toLowerCase().includes(q);
+      if (!matchName && !matchZone && !matchRemarks && !matchFac) return false;
+    }
+
+    // Campus
+    if (filters.campus !== 'ALL' && r.campus !== filters.campus) return false;
+
+    // Block
+    if (filters.block !== 'ALL' && r.block !== filters.block) return false;
+
+    // VC Facility
+    if (filters.vcFacility !== 'ALL' && r.vcFacility !== filters.vcFacility) return false;
+
+    // Floor
+    if (filters.floor !== 'ALL' && r.floor !== filters.floor) return false;
+
+    // Min Capacity
+    if (filters.minCapacity && r.capacity < parseInt(filters.minCapacity, 10)) return false;
+
+    // Status
+    if (filters.status !== 'ALL' && r.status !== filters.status) return false;
+
+    return true;
+  });
+
   return (
     <Box>
       <Box
@@ -124,10 +185,10 @@ const AdminRooms = () => {
       >
         <Box>
           <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.1rem' } }}>
-            Meeting Rooms Inventory (Hyderabad)
+            Meeting Rooms Inventory ({filteredRooms.length} / {rooms.length})
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.85rem', sm: '1rem' } }}>
-            Manage corporate rooms, VC hardware facilities, seating limits, and zones
+            Filter and manage corporate rooms, VC hardware facilities, seating limits, and zones
           </Typography>
         </Box>
         <Button
@@ -154,8 +215,127 @@ const AdminRooms = () => {
         </Alert>
       )}
 
+      {/* Filter & Search Toolbar */}
+      <Paper sx={{ p: 2.5, borderRadius: 3, mb: 4, bgcolor: '#ffffff', boxShadow: '0 4px 20px rgba(0,0,0,0.04)' }}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12} sm={6} md={3}>
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="Search by name, zone, facilities..."
+              value={filters.search}
+              onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon color="action" fontSize="small" />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Grid>
+
+          <Grid item xs={6} sm={3} md={2}>
+            <TextField
+              select
+              fullWidth
+              size="small"
+              label="Campus"
+              value={filters.campus}
+              onChange={(e) => setFilters({ ...filters, campus: e.target.value })}
+            >
+              <MenuItem value="ALL">All Campuses</MenuItem>
+              <MenuItem value="Campus ATC">Campus ATC</MenuItem>
+              <MenuItem value="Capital ATC">Capital ATC</MenuItem>
+            </TextField>
+          </Grid>
+
+          <Grid item xs={6} sm={3} md={1.5}>
+            <TextField
+              select
+              fullWidth
+              size="small"
+              label="Block"
+              value={filters.block}
+              onChange={(e) => setFilters({ ...filters, block: e.target.value })}
+            >
+              <MenuItem value="ALL">All Blocks</MenuItem>
+              <MenuItem value="A Block">A Block</MenuItem>
+              <MenuItem value="B Block">B Block</MenuItem>
+              <MenuItem value="N/A">N/A</MenuItem>
+            </TextField>
+          </Grid>
+
+          <Grid item xs={6} sm={3} md={1.5}>
+            <TextField
+              select
+              fullWidth
+              size="small"
+              label="VC Facility"
+              value={filters.vcFacility}
+              onChange={(e) => setFilters({ ...filters, vcFacility: e.target.value })}
+            >
+              <MenuItem value="ALL">All Types</MenuItem>
+              <MenuItem value="VC">VC (Video Conf)</MenuItem>
+              <MenuItem value="Non-VC">Non-VC</MenuItem>
+            </TextField>
+          </Grid>
+
+          <Grid item xs={6} sm={3} md={1.5}>
+            <TextField
+              select
+              fullWidth
+              size="small"
+              label="Floor"
+              value={filters.floor}
+              onChange={(e) => setFilters({ ...filters, floor: e.target.value })}
+            >
+              <MenuItem value="ALL">All Floors</MenuItem>
+              <MenuItem value="Ground Floor">Ground Floor</MenuItem>
+              <MenuItem value="Level 1">Level 1</MenuItem>
+              <MenuItem value="Level 2">Level 2</MenuItem>
+              <MenuItem value="Level 3">Level 3</MenuItem>
+              <MenuItem value="Level 4">Level 4</MenuItem>
+              <MenuItem value="Level 5">Level 5</MenuItem>
+              <MenuItem value="Level 6">Level 6</MenuItem>
+              <MenuItem value="3rd Floor">3rd Floor</MenuItem>
+              <MenuItem value="2nd Floor">2nd Floor</MenuItem>
+            </TextField>
+          </Grid>
+
+          <Grid item xs={6} sm={3} md={1.5}>
+            <TextField
+              select
+              fullWidth
+              size="small"
+              label="Status"
+              value={filters.status}
+              onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+            >
+              <MenuItem value="ALL">All Status</MenuItem>
+              <MenuItem value="Active">Active</MenuItem>
+              <MenuItem value="Inactive">Inactive</MenuItem>
+            </TextField>
+          </Grid>
+
+          <Grid item xs={12} sm={3} md={1} display="flex" justifyContent="flex-end">
+            <Button
+              variant="outlined"
+              size="small"
+              color="inherit"
+              onClick={handleResetFilters}
+              startIcon={<FilterAltOffIcon fontSize="small" />}
+              sx={{ whiteSpace: 'nowrap', py: 0.8 }}
+            >
+              Reset
+            </Button>
+          </Grid>
+        </Grid>
+      </Paper>
+
+      {/* Rooms Grid */}
       <Grid container spacing={3}>
-        {rooms.map((room) => (
+        {filteredRooms.map((room) => (
           <Grid item xs={12} sm={6} md={4} key={room.id} display="flex">
             <RoomCard
               room={room}
@@ -165,6 +345,18 @@ const AdminRooms = () => {
             />
           </Grid>
         ))}
+        {filteredRooms.length === 0 && (
+          <Grid item xs={12}>
+            <Paper sx={{ p: 4, textAlign: 'center', borderRadius: 3 }}>
+              <Typography variant="h6" color="text.secondary">
+                No rooms match the selected filter criteria.
+              </Typography>
+              <Button size="small" onClick={handleResetFilters} sx={{ mt: 1 }}>
+                Reset Filters
+              </Button>
+            </Paper>
+          </Grid>
+        )}
       </Grid>
 
       {/* Add / Edit Dialog */}

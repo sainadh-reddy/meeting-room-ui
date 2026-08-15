@@ -12,7 +12,7 @@ const Layout = () => {
   };
 
   return (
-    <Box display="flex" minHeight="100vh" bgcolor="#F4F6F9" flexDirection="column">
+    <Box display="flex" minHeight="100vh" bgcolor="#F4F6F9" flexDirection="column" sx={{ overflowX: 'hidden' }}>
       {/* Mobile Top App Bar (Visible on xs & sm screens) */}
       <AppBar
         position="sticky"
