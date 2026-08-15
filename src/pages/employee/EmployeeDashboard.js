@@ -4,19 +4,37 @@ import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import StatsCard from '../../components/StatsCard';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import api from '../../api/api';
+import { getDynamicBookingStatus, getStatusChipProps } from '../../utils/statusUtils';
 
 const EmployeeDashboard = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [myBookings, setMyBookings] = useState([]);
-  const [selectedFilter, setSelectedFilter] = useState('ALL'); // 'ALL', 'Upcoming', 'Completed'
+  const [selectedFilter, setSelectedFilter] = useState('ALL'); // 'ALL', 'Upcoming', 'Ongoing', 'Completed'
+  const [now, setNow] = useState(new Date());
 
   useEffect(() => {
     fetchMyBookings();
+    
+    // Auto-refresh API data every 10 seconds
+    const apiInterval = setInterval(() => {
+      fetchMyBookings();
+    }, 10000);
+
+    // Live clock tick every 5 seconds for instant dynamic status calculations
+    const clockInterval = setInterval(() => {
+      setNow(new Date());
+    }, 5000);
+
+    return () => {
+      clearInterval(apiInterval);
+      clearInterval(clockInterval);
+    };
   }, []);
 
   const fetchMyBookings = async () => {
@@ -36,17 +54,24 @@ const EmployeeDashboard = () => {
     }
   };
 
-  const upcomingCount = myBookings.filter((b) => b.status === 'Upcoming').length;
-  const completedCount = myBookings.filter((b) => b.status === 'Completed').length;
+  // Dynamically map bookings with live status based on exact client time
+  const processedBookings = myBookings.map((b) => ({
+    ...b,
+    dynamicStatus: getDynamicBookingStatus(b, now),
+  }));
 
-  const displayedBookings = myBookings.filter((b) => {
+  const upcomingCount = processedBookings.filter((b) => b.dynamicStatus === 'Upcoming').length;
+  const ongoingCount = processedBookings.filter((b) => b.dynamicStatus === 'Ongoing').length;
+  const completedCount = processedBookings.filter((b) => b.dynamicStatus === 'Completed').length;
+
+  const displayedBookings = processedBookings.filter((b) => {
     if (selectedFilter === 'ALL') return true;
-    return b.status?.toUpperCase() === selectedFilter.toUpperCase();
+    return b.dynamicStatus?.toUpperCase() === selectedFilter.toUpperCase();
   });
 
   return (
     <Box>
-      {/* Mobile Responsive Header Row */}
+      {/* Header Row */}
       <Box
         display="flex"
         flexDirection={{ xs: 'column', sm: 'row' }}
@@ -60,7 +85,7 @@ const EmployeeDashboard = () => {
             Welcome back, {user?.name || 'Employee'}!
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.85rem', sm: '1rem' } }}>
-            Click any metric card below to filter your personal meeting schedule
+            Real-time dynamic meeting status tracking across corporate spaces
           </Typography>
         </Box>
         <Button
@@ -83,7 +108,7 @@ const EmployeeDashboard = () => {
 
       {/* Stats Cards */}
       <Grid container spacing={2.5} mb={4}>
-        <Grid item xs={12} sm={4} display="flex">
+        <Grid item xs={12} sm={3} display="flex">
           <StatsCard
             title="Total Reservations"
             value={myBookings.length}
@@ -93,17 +118,27 @@ const EmployeeDashboard = () => {
             onClick={() => setSelectedFilter('ALL')}
           />
         </Grid>
-        <Grid item xs={12} sm={4} display="flex">
+        <Grid item xs={12} sm={3} display="flex">
+          <StatsCard
+            title="Ongoing Now"
+            value={ongoingCount}
+            icon={PlayCircleOutlineIcon}
+            color="#EA580C"
+            active={selectedFilter === 'Ongoing'}
+            onClick={() => handleCardClick('Ongoing')}
+          />
+        </Grid>
+        <Grid item xs={12} sm={3} display="flex">
           <StatsCard
             title="Upcoming Meetings"
             value={upcomingCount}
             icon={EventAvailableIcon}
-            color="#F7941E"
+            color="#2563EB"
             active={selectedFilter === 'Upcoming'}
             onClick={() => handleCardClick('Upcoming')}
           />
         </Grid>
-        <Grid item xs={12} sm={4} display="flex">
+        <Grid item xs={12} sm={3} display="flex">
           <StatsCard
             title="Completed Meetings"
             value={completedCount}
@@ -148,34 +183,25 @@ const EmployeeDashboard = () => {
                 <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Time</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Participants</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Dynamic Status</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {displayedBookings.slice(0, 8).map((b) => (
-                <TableRow key={b.id} hover>
-                  <TableCell sx={{ fontWeight: 600 }}>{b.title}</TableCell>
-                  <TableCell>{b.roomName}</TableCell>
-                  <TableCell>{b.bookingDate}</TableCell>
-                  <TableCell>{`${b.startTime} - ${b.endTime}`}</TableCell>
-                  <TableCell>{b.participants || 1} seats</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={b.status}
-                      size="small"
-                      color={
-                        b.status === 'Cancelled'
-                          ? 'error'
-                          : b.status === 'Completed'
-                          ? 'success'
-                          : b.status === 'Ongoing'
-                          ? 'warning'
-                          : 'primary'
-                      }
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
+              {displayedBookings.slice(0, 8).map((b) => {
+                const chipProps = getStatusChipProps(b.dynamicStatus);
+                return (
+                  <TableRow key={b.id} hover>
+                    <TableCell sx={{ fontWeight: 600 }}>{b.title}</TableCell>
+                    <TableCell>{b.roomName}</TableCell>
+                    <TableCell>{b.bookingDate}</TableCell>
+                    <TableCell>{`${b.startTime} - ${b.endTime}`}</TableCell>
+                    <TableCell>{b.participants || 1} seats</TableCell>
+                    <TableCell>
+                      <Chip size="small" {...chipProps} />
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
               {displayedBookings.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={6} align="center" sx={{ py: 3 }}>
@@ -192,3 +218,4 @@ const EmployeeDashboard = () => {
 };
 
 export default EmployeeDashboard;
+

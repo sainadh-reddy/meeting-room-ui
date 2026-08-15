@@ -65,7 +65,7 @@ const Login = () => {
       >
         <CardContent sx={{ p: 4 }}>
           {/* Header Branding */}
-          <Box textAlgn="center" display="flex" flexDirection="column" alignItems="center" mb={3}>
+          <Box textAlign="center" display="flex" flexDirection="column" alignItems="center" mb={3}>
             <Box
               sx={{
                 width: 56,

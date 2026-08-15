@@ -17,13 +17,28 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import CancelIcon from '@mui/icons-material/Cancel';
 import api from '../../api/api';
+import { getDynamicBookingStatus, getStatusChipProps } from '../../utils/statusUtils';
 
 const AdminBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [now, setNow] = useState(new Date());
 
   useEffect(() => {
     fetchBookings();
+
+    const apiInterval = setInterval(() => {
+      fetchBookings();
+    }, 10000);
+
+    const clockInterval = setInterval(() => {
+      setNow(new Date());
+    }, 5000);
+
+    return () => {
+      clearInterval(apiInterval);
+      clearInterval(clockInterval);
+    };
   }, []);
 
   const fetchBookings = async () => {
@@ -58,11 +73,11 @@ const AdminBookings = () => {
   return (
     <Box>
       <Box mb={4}>
-        <Typography variant="h4" fontWeight={700}>
+        <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.1rem' } }}>
           Organization Bookings Directory
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Monitor and manage all room reservations across the entire company
+          Monitor real-time dynamic meeting statuses and manage room reservations company-wide
         </Typography>
       </Box>
 
@@ -95,66 +110,60 @@ const AdminBookings = () => {
                 <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Time</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Recurrence</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Dynamic Status</TableCell>
                 <TableCell sx={{ fontWeight: 600 }} align="center">
                   Action
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredBookings.map((b) => (
-                <TableRow key={b.id} hover>
-                  <TableCell>#{b.id}</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>{b.title}</TableCell>
-                  <TableCell>{b.roomName}</TableCell>
-                  <TableCell>
-                    <Typography variant="body2" fontWeight={600}>
-                      {b.userName || 'N/A'}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {b.userEmail}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>{b.bookingDate}</TableCell>
-                  <TableCell>{`${b.startTime} - ${b.endTime}`}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={b.recurrenceType || 'NONE'}
-                      size="small"
-                      variant="outlined"
-                      sx={{ fontSize: '0.75rem' }}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={b.status}
-                      size="small"
-                      color={
-                        b.status === 'Cancelled'
-                          ? 'error'
-                          : b.status === 'Completed'
-                          ? 'success'
-                          : b.status === 'Ongoing'
-                          ? 'warning'
-                          : 'primary'
-                      }
-                    />
-                  </TableCell>
-                  <TableCell align="center">
-                    {b.status !== 'Cancelled' && (
-                      <Button
+              {filteredBookings.map((b) => {
+                const dynamicStatus = getDynamicBookingStatus(b, now);
+                const chipProps = getStatusChipProps(dynamicStatus);
+                const canCancel = dynamicStatus !== 'Cancelled' && dynamicStatus !== 'Completed';
+
+                return (
+                  <TableRow key={b.id} hover>
+                    <TableCell>#{b.id}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{b.title}</TableCell>
+                    <TableCell>{b.roomName}</TableCell>
+                    <TableCell>
+                      <Typography variant="body2" fontWeight={600}>
+                        {b.userName || 'N/A'}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {b.userEmail}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>{b.bookingDate}</TableCell>
+                    <TableCell>{`${b.startTime} - ${b.endTime}`}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={b.recurrenceType || 'NONE'}
                         size="small"
-                        color="error"
                         variant="outlined"
-                        startIcon={<CancelIcon />}
-                        onClick={() => handleCancel(b.id)}
-                      >
-                        Cancel
-                      </Button>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
+                        sx={{ fontSize: '0.75rem' }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Chip size="small" {...chipProps} />
+                    </TableCell>
+                    <TableCell align="center">
+                      {canCancel && (
+                        <Button
+                          size="small"
+                          color="error"
+                          variant="outlined"
+                          startIcon={<CancelIcon />}
+                          onClick={() => handleCancel(b.id)}
+                        >
+                          Cancel
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
               {filteredBookings.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={9} align="center" sx={{ py: 3 }}>
@@ -171,3 +180,4 @@ const AdminBookings = () => {
 };
 
 export default AdminBookings;
+

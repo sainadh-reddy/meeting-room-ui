@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Grid, Paper, TextField, Button, Alert } from '@mui/material';
+import { Box, Typography, Grid, Paper, TextField, Button, Alert, MenuItem } from '@mui/material';
+import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import RoomCard from '../../components/RoomCard';
 import BookRoomModal from './BookRoom';
 import api from '../../api/api';
@@ -7,7 +8,10 @@ import api from '../../api/api';
 const AvailableRooms = () => {
   const [rooms, setRooms] = useState([]);
   const [filters, setFilters] = useState({
+    campus: 'ALL',
+    block: 'ALL',
     floor: '',
+    vcFacility: 'ALL',
     minCapacity: '',
     facility: '',
   });
@@ -17,6 +21,10 @@ const AvailableRooms = () => {
 
   useEffect(() => {
     fetchRooms();
+    const timer = setInterval(() => {
+      fetchRooms();
+    }, 10000);
+    return () => clearInterval(timer);
   }, []);
 
   const fetchRooms = async () => {
@@ -63,10 +71,14 @@ const AvailableRooms = () => {
   };
 
   const handleFilterSearch = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     try {
       const params = {};
+      params.location = 'Hyd';
+      if (filters.campus && filters.campus !== 'ALL') params.campus = filters.campus;
+      if (filters.block && filters.block !== 'ALL') params.block = filters.block;
       if (filters.floor) params.floor = filters.floor;
+      if (filters.vcFacility && filters.vcFacility !== 'ALL') params.vcFacility = filters.vcFacility;
       if (filters.minCapacity) params.minCapacity = filters.minCapacity;
       if (filters.facility) params.facility = filters.facility;
 
@@ -75,6 +87,18 @@ const AvailableRooms = () => {
     } catch (err) {
       console.error('Filter search failed:', err);
     }
+  };
+
+  const handleResetFilters = () => {
+    setFilters({
+      campus: 'ALL',
+      block: 'ALL',
+      floor: '',
+      vcFacility: 'ALL',
+      minCapacity: '',
+      facility: '',
+    });
+    fetchRooms();
   };
 
   const handleOpenBook = (room) => {
@@ -90,11 +114,11 @@ const AvailableRooms = () => {
   return (
     <Box>
       <Box mb={4}>
-        <Typography variant="h4" fontWeight={700}>
-          Available Meeting Spaces
+        <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.1rem' } }}>
+          Available Meeting Spaces (Hyderabad)
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Find and reserve equipped conference rooms across company floors
+          Browse and reserve equipped conference rooms across Campus ATC & Capital ATC
         </Typography>
       </Box>
 
@@ -107,39 +131,81 @@ const AvailableRooms = () => {
       <Paper sx={{ p: 3, borderRadius: 3, mb: 4 }}>
         <form onSubmit={handleFilterSearch}>
           <Grid container spacing={2} alignItems="center">
-            <Grid item xs={12} sm={3}>
+            {/* Campus Select */}
+            <Grid item xs={12} sm={6} md={2}>
+              <TextField
+                select
+                fullWidth
+                label="Building / Campus"
+                value={filters.campus}
+                onChange={(e) => setFilters({ ...filters, campus: e.target.value })}
+                size="small"
+              >
+                <MenuItem value="ALL">All Buildings</MenuItem>
+                <MenuItem value="Campus ATC">Campus ATC</MenuItem>
+                <MenuItem value="Capital ATC">Capital ATC</MenuItem>
+              </TextField>
+            </Grid>
+
+            {/* Block Select */}
+            <Grid item xs={12} sm={6} md={2}>
+              <TextField
+                select
+                fullWidth
+                label="Block"
+                value={filters.block}
+                onChange={(e) => setFilters({ ...filters, block: e.target.value })}
+                size="small"
+              >
+                <MenuItem value="ALL">All Blocks</MenuItem>
+                <MenuItem value="A Block">A Block</MenuItem>
+                <MenuItem value="B Block">B Block</MenuItem>
+              </TextField>
+            </Grid>
+
+            {/* VC / Non-VC Select */}
+            <Grid item xs={12} sm={6} md={2}>
+              <TextField
+                select
+                fullWidth
+                label="VC Facility"
+                value={filters.vcFacility}
+                onChange={(e) => setFilters({ ...filters, vcFacility: e.target.value })}
+                size="small"
+              >
+                <MenuItem value="ALL">All Facilities</MenuItem>
+                <MenuItem value="VC">VC (Video Conf)</MenuItem>
+                <MenuItem value="Non-VC">Non-VC</MenuItem>
+              </TextField>
+            </Grid>
+
+            {/* Floor Input */}
+            <Grid item xs={12} sm={6} md={2}>
               <TextField
                 fullWidth
-                type="number"
-                label="Floor"
-                placeholder="e.g. 1"
+                label="Floor / Level"
+                placeholder="e.g. Ground Floor, Level 1"
                 value={filters.floor}
                 onChange={(e) => setFilters({ ...filters, floor: e.target.value })}
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} sm={3}>
+
+            {/* Min Capacity */}
+            <Grid item xs={12} sm={6} md={2}>
               <TextField
                 fullWidth
                 type="number"
-                label="Min Seats"
+                label="Min Capacity"
                 placeholder="e.g. 6"
                 value={filters.minCapacity}
                 onChange={(e) => setFilters({ ...filters, minCapacity: e.target.value })}
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                label="Equipment Keyword"
-                placeholder="e.g. Projector"
-                value={filters.facility}
-                onChange={(e) => setFilters({ ...filters, facility: e.target.value })}
-                size="small"
-              />
-            </Grid>
-            <Grid item xs={12} sm={2} display="flex" justifyContent={{ xs: 'flex-start', sm: 'flex-end' }}>
+
+            {/* Filter & Reset Buttons */}
+            <Grid item xs={12} sm={6} md={2} display="flex" gap={1} justifyContent="flex-end">
               <Button
                 type="submit"
                 variant="contained"
@@ -147,12 +213,20 @@ const AvailableRooms = () => {
                   bgcolor: '#002855',
                   '&:hover': { bgcolor: '#001835' },
                   py: 0.9,
-                  px: 3,
-                  fontSize: '0.875rem',
-                  width: { xs: '100%', sm: 'auto' },
+                  px: 2.5,
+                  fontSize: '0.85rem',
+                  flexGrow: 1,
                 }}
               >
                 Filter
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={handleResetFilters}
+                sx={{ py: 0.9, px: 1.5, minWidth: 'auto' }}
+                title="Reset Filters"
+              >
+                <FilterAltOffIcon fontSize="small" />
               </Button>
             </Grid>
           </Grid>
@@ -190,3 +264,4 @@ const AvailableRooms = () => {
 };
 
 export default AvailableRooms;
+

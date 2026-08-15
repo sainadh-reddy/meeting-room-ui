@@ -15,13 +15,28 @@ import {
 } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import api from '../../api/api';
+import { getDynamicBookingStatus, getStatusChipProps } from '../../utils/statusUtils';
 
 const MyBookings = () => {
   const [bookings, setBookings] = useState([]);
   const [msg, setMsg] = useState('');
+  const [now, setNow] = useState(new Date());
 
   useEffect(() => {
     fetchMyBookings();
+
+    const apiInterval = setInterval(() => {
+      fetchMyBookings();
+    }, 10000);
+
+    const clockInterval = setInterval(() => {
+      setNow(new Date());
+    }, 5000);
+
+    return () => {
+      clearInterval(apiInterval);
+      clearInterval(clockInterval);
+    };
   }, []);
 
   const fetchMyBookings = async () => {
@@ -47,11 +62,11 @@ const MyBookings = () => {
   return (
     <Box>
       <Box mb={4}>
-        <Typography variant="h4" fontWeight={700}>
+        <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: '1.4rem', sm: '1.8rem', md: '2.1rem' } }}>
           My Bookings & Reservations
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Review your personal meeting room schedule, recurrence details, and booking cancellations
+          Review your personal meeting room schedule, dynamic real-time statuses, and cancellations
         </Typography>
       </Box>
 
@@ -72,58 +87,52 @@ const MyBookings = () => {
                 <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Time Slot</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Recurrence</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Dynamic Status</TableCell>
                 <TableCell sx={{ fontWeight: 600 }} align="center">
                   Action
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {bookings.map((b) => (
-                <TableRow key={b.id} hover>
-                  <TableCell>#{b.id}</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>{b.title}</TableCell>
-                  <TableCell>{b.roomName}</TableCell>
-                  <TableCell>{b.bookingDate}</TableCell>
-                  <TableCell>{`${b.startTime} - ${b.endTime}`}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={b.recurrenceType || 'NONE'}
-                      size="small"
-                      variant="outlined"
-                      sx={{ fontSize: '0.75rem' }}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={b.status}
-                      size="small"
-                      color={
-                        b.status === 'Cancelled'
-                          ? 'error'
-                          : b.status === 'Completed'
-                          ? 'success'
-                          : b.status === 'Ongoing'
-                          ? 'warning'
-                          : 'primary'
-                      }
-                    />
-                  </TableCell>
-                  <TableCell align="center">
-                    {b.status !== 'Cancelled' && (
-                      <Button
+              {bookings.map((b) => {
+                const dynamicStatus = getDynamicBookingStatus(b, now);
+                const chipProps = getStatusChipProps(dynamicStatus);
+                const canCancel = dynamicStatus !== 'Cancelled' && dynamicStatus !== 'Completed';
+
+                return (
+                  <TableRow key={b.id} hover>
+                    <TableCell>#{b.id}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{b.title}</TableCell>
+                    <TableCell>{b.roomName}</TableCell>
+                    <TableCell>{b.bookingDate}</TableCell>
+                    <TableCell>{`${b.startTime} - ${b.endTime}`}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={b.recurrenceType || 'NONE'}
                         size="small"
-                        color="error"
                         variant="outlined"
-                        startIcon={<CancelIcon />}
-                        onClick={() => handleCancel(b.id)}
-                      >
-                        Cancel
-                      </Button>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
+                        sx={{ fontSize: '0.75rem' }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Chip size="small" {...chipProps} />
+                    </TableCell>
+                    <TableCell align="center">
+                      {canCancel && (
+                        <Button
+                          size="small"
+                          color="error"
+                          variant="outlined"
+                          startIcon={<CancelIcon />}
+                          onClick={() => handleCancel(b.id)}
+                        >
+                          Cancel
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
               {bookings.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={8} align="center" sx={{ py: 3 }}>
@@ -140,3 +149,4 @@ const MyBookings = () => {
 };
 
 export default MyBookings;
+

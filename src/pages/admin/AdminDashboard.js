@@ -8,6 +8,7 @@ import MeetingRoomIcon from '@mui/icons-material/MeetingRoom';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import StatsCard from '../../components/StatsCard';
 import api from '../../api/api';
+import { getDynamicBookingStatus, getStatusChipProps } from '../../utils/statusUtils';
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -20,9 +21,23 @@ const AdminDashboard = () => {
   });
   const [allBookings, setAllBookings] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState('ALL'); // 'ALL', 'Upcoming', 'Ongoing', 'Completed', 'Cancelled'
+  const [now, setNow] = useState(new Date());
 
   useEffect(() => {
     fetchDashboardData();
+
+    const apiInterval = setInterval(() => {
+      fetchDashboardData();
+    }, 10000);
+
+    const clockInterval = setInterval(() => {
+      setNow(new Date());
+    }, 5000);
+
+    return () => {
+      clearInterval(apiInterval);
+      clearInterval(clockInterval);
+    };
   }, []);
 
   const fetchDashboardData = async () => {
@@ -46,9 +61,20 @@ const AdminDashboard = () => {
     }
   };
 
-  const displayedBookings = allBookings.filter((b) => {
+  // Dynamically map bookings with live status based on exact client time
+  const processedBookings = allBookings.map((b) => ({
+    ...b,
+    dynamicStatus: getDynamicBookingStatus(b, now),
+  }));
+
+  const upcomingCount = processedBookings.filter((b) => b.dynamicStatus === 'Upcoming').length;
+  const ongoingCount = processedBookings.filter((b) => b.dynamicStatus === 'Ongoing').length;
+  const completedCount = processedBookings.filter((b) => b.dynamicStatus === 'Completed').length;
+  const cancelledCount = processedBookings.filter((b) => b.dynamicStatus === 'Cancelled').length;
+
+  const displayedBookings = processedBookings.filter((b) => {
     if (selectedFilter === 'ALL') return true;
-    return b.status?.toUpperCase() === selectedFilter.toUpperCase();
+    return b.dynamicStatus?.toUpperCase() === selectedFilter.toUpperCase();
   });
 
   return (
@@ -58,7 +84,7 @@ const AdminDashboard = () => {
           Admin Control Dashboard
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.85rem', sm: '1rem' } }}>
-          Click any metric card below to filter organization bookings
+          Real-time corporate room utilization & live dynamic meeting statuses
         </Typography>
       </Box>
 
@@ -67,7 +93,7 @@ const AdminDashboard = () => {
         <Grid item xs={12} sm={6} md={2.4} display="flex">
           <StatsCard
             title="Total Rooms"
-            value={stats.totalRooms}
+            value={stats.totalRooms || 0}
             icon={MeetingRoomIcon}
             color="#002855"
             active={selectedFilter === 'ALL'}
@@ -77,7 +103,7 @@ const AdminDashboard = () => {
         <Grid item xs={12} sm={6} md={2.4} display="flex">
           <StatsCard
             title="Upcoming"
-            value={stats.upcoming}
+            value={upcomingCount}
             icon={EventAvailableIcon}
             color="#0EA5E9"
             active={selectedFilter === 'Upcoming'}
@@ -86,8 +112,8 @@ const AdminDashboard = () => {
         </Grid>
         <Grid item xs={12} sm={6} md={2.4} display="flex">
           <StatsCard
-            title="Ongoing"
-            value={stats.ongoing}
+            title="Ongoing Now"
+            value={ongoingCount}
             icon={HourglassTopIcon}
             color="#F59E0B"
             active={selectedFilter === 'Ongoing'}
@@ -97,7 +123,7 @@ const AdminDashboard = () => {
         <Grid item xs={12} sm={6} md={2.4} display="flex">
           <StatsCard
             title="Completed"
-            value={stats.completed}
+            value={completedCount}
             icon={CheckCircleIcon}
             color="#10B981"
             active={selectedFilter === 'Completed'}
@@ -107,7 +133,7 @@ const AdminDashboard = () => {
         <Grid item xs={12} sm={6} md={2.4} display="flex">
           <StatsCard
             title="Cancelled"
-            value={stats.cancelled}
+            value={cancelledCount}
             icon={CancelIcon}
             color="#EF4444"
             active={selectedFilter === 'Cancelled'}
@@ -145,35 +171,26 @@ const AdminDashboard = () => {
                 <TableCell sx={{ fontWeight: 600 }}>User</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>Time</TableCell>
-                <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Dynamic Status</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {displayedBookings.map((b) => (
-                <TableRow key={b.id} hover>
-                  <TableCell>#{b.id}</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>{b.title}</TableCell>
-                  <TableCell>{b.roomName}</TableCell>
-                  <TableCell>{b.userName || b.userEmail}</TableCell>
-                  <TableCell>{b.bookingDate}</TableCell>
-                  <TableCell>{`${b.startTime} - ${b.endTime}`}</TableCell>
-                  <TableCell>
-                    <Chip
-                      label={b.status}
-                      size="small"
-                      color={
-                        b.status === 'Cancelled'
-                          ? 'error'
-                          : b.status === 'Completed'
-                          ? 'success'
-                          : b.status === 'Ongoing'
-                          ? 'warning'
-                          : 'primary'
-                      }
-                    />
-                  </TableCell>
-                </TableRow>
-              ))}
+              {displayedBookings.map((b) => {
+                const chipProps = getStatusChipProps(b.dynamicStatus);
+                return (
+                  <TableRow key={b.id} hover>
+                    <TableCell>#{b.id}</TableCell>
+                    <TableCell sx={{ fontWeight: 600 }}>{b.title}</TableCell>
+                    <TableCell>{b.roomName}</TableCell>
+                    <TableCell>{b.userName || b.userEmail}</TableCell>
+                    <TableCell>{b.bookingDate}</TableCell>
+                    <TableCell>{`${b.startTime} - ${b.endTime}`}</TableCell>
+                    <TableCell>
+                      <Chip size="small" {...chipProps} />
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
               {displayedBookings.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={7} align="center" sx={{ py: 3 }}>
@@ -190,3 +207,4 @@ const AdminDashboard = () => {
 };
 
 export default AdminDashboard;
+

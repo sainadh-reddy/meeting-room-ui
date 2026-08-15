@@ -122,7 +122,7 @@ const RoomSchedule = () => {
             >
               {rooms.map((r) => (
                 <MenuItem key={r.id} value={r.id}>
-                  {r.name} (Floor {r.floor}, {r.capacity} seats)
+                  {r.name} ({r.campus || 'Campus ATC'} • {r.block && r.block !== 'N/A' ? r.block + ' • ' : ''}{r.floor}, {r.capacity} seats, {r.vcFacility || 'Non-VC'})
                 </MenuItem>
               ))}
             </TextField>
